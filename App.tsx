@@ -3,6 +3,7 @@ import { Platform, StatusBar } from 'react-native';
 import { NativeBaseProvider } from 'native-base';
 import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
 import { LogLevel, NotificationClickEvent, OneSignal } from 'react-native-onesignal';
+import * as Linking from 'expo-linking';
 
 import { Routes } from './src/routes';
 
@@ -25,12 +26,20 @@ export default function App() {
     OneSignal.initialize(oneSignalAppId);
     OneSignal.Notifications.requestPermission(true);
     tagUserInfoCreate();
-}, []); // Ensure this only runs once on app mount
+  }, []); // Ensure this only runs once on app mount
 
   useEffect(() => {
     const handleNotificationClick = (event: NotificationClickEvent): void => {
-      const { actionId } = event.result
+      const { actionId, url } = event.result;
 
+      // Handle deep link from notification click (app was background/closed)
+      // The URL comes in event.result.url (most reliable)
+      if (url) {
+        Linking.openURL(url);
+        return;
+      }
+
+      // Handle action buttons
       switch(actionId) {
         case "1":
           console.log("Ver todos")

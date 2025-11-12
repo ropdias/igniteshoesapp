@@ -1,31 +1,44 @@
 import { HStack, Text, IconButton, CloseIcon, Icon, Pressable } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import { OSNotification } from 'react-native-onesignal';
-import { useNavigation } from '@react-navigation/native';
-
-type AdditionalDataProps = {
-  route?: string
-  product_id?: string
-}
+import * as Linking from 'expo-linking';
 
 type Props = {
-  data: OSNotification & {
-    additionalData?: AdditionalDataProps
-  }
+  data: OSNotification
   onClose: () => void
 }
 
 export function Notification({ data, onClose }: Props) {
-  const { navigate } = useNavigation()
   function handleOnPress(){
-    const route = data.additionalData?.route
-    const productId = data.additionalData?.product_id
-
-    if (route === "details" && productId){
-      navigate("details", { productId })
-      onClose()
+    let deepLinkUrl = data.launchURL;
+    
+    if (!deepLinkUrl && data.rawPayload) {
+      try {
+        const rawPayloadStr = typeof data.rawPayload === 'string' 
+          ? data.rawPayload 
+          : JSON.stringify(data.rawPayload);
+        
+        const rawPayloadObj = JSON.parse(rawPayloadStr);
+        
+        if (rawPayloadObj.custom) {
+          const customObj = JSON.parse(rawPayloadObj.custom);
+          
+          if (customObj.u) {
+            const urlPath = customObj.u.replace(/^[^:]+:\/\//, '/');
+            deepLinkUrl = Linking.createURL(urlPath);
+          }
+        }
+      } catch (error) {
+        console.log('Error parsing notification payload:', error);
+      }
+    }
+    
+    if(deepLinkUrl){
+      Linking.openURL(deepLinkUrl);
+      onClose();
     }
   }
+  
   return (
     <Pressable 
       w="full" 
