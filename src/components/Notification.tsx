@@ -3,23 +3,26 @@ import { Ionicons } from '@expo/vector-icons';
 import { OSNotification } from 'react-native-onesignal';
 import { useNavigation } from '@react-navigation/native';
 
-type Props = {
-  data: OSNotification;
-  onClose: () => void;
-}
-
 type AdditionalDataProps = {
   route?: string
   product_id?: string
 }
 
+type Props = {
+  data: OSNotification & {
+    additionalData?: AdditionalDataProps
+  }
+  onClose: () => void
+}
+
 export function Notification({ data, onClose }: Props) {
   const { navigate } = useNavigation()
   function handleOnPress(){
-    const { route, product_id } = data.additionalData as AdditionalDataProps
+    const route = data.additionalData?.route
+    const productId = data.additionalData?.product_id
 
-    if (route === "details" && product_id){
-      navigate("details", { productId: product_id })
+    if (route === "details" && productId){
+      navigate("details", { productId })
       onClose()
     }
   }
