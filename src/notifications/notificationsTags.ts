@@ -6,3 +6,7 @@ export function tagUserInfoCreate() {
         user_email: "rodrigopdias.dev@gmail.com",
     });
 }
+
+export function tagUserInfoDelete() {
+    OneSignal.User.removeTags(["user_name", "user_email"]);
+}

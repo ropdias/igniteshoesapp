@@ -11,7 +11,7 @@ import { THEME } from './src/theme';
 import { Loading } from './src/components/Loading';
 
 import { CartContextProvider } from './src/contexts/CartContext';
-import { tagUserInfoCreate } from './src/notifications/notificationsTags';
+import { tagUserInfoCreate, tagUserInfoDelete } from './src/notifications/notificationsTags';
 
 const oneSignalAppId = Platform.OS === "ios" ? "4842b32d-6131-4b63-b3c6-d09b5c8b227b" : "1905ae86-2e20-4b51-a268-6eee8bb717ea";
 
@@ -25,7 +25,8 @@ export default function App() {
     // Initialize with your OneSignal App ID
     OneSignal.initialize(oneSignalAppId);
     OneSignal.Notifications.requestPermission(true);
-    tagUserInfoCreate();
+    // tagUserInfoCreate();
+    // tagUserInfoDelete();
   }, []); // Ensure this only runs once on app mount
 
   useEffect(() => {
